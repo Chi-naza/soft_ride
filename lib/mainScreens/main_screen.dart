@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:soft_ride/Firebase_Service/global.dart';
+import 'package:soft_ride/auth/sign_in_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -12,7 +14,11 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text('Main Screen'),
+        child: InkWell(child: Text('Main Screen'), onTap: (){
+          fAuth.signOut();
+          Navigator.push(context, MaterialPageRoute(builder: (c) => SignInScreen()));
+          print('Signing out . . .');
+        },),
       ),
     );
   }

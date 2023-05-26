@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:soft_ride/Firebase_Service/global.dart';
 import 'package:soft_ride/auth/sign_in_screen.dart';
 import 'package:soft_ride/constants/image_bank.dart';
+import 'package:soft_ride/intro/splash_screen.dart';
 import 'package:soft_ride/widgets/progress_dialog.dart';
 
 
@@ -36,7 +37,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         Fluttertoast.showToast(msg: "Password must be atleast 6 Characters.");
       }else {
         // calling the Registration function
-        signUpAndSaveDriverInfoNow();
+        signUpAndSaveUserInfoNow();
         
       }
     }
@@ -44,7 +45,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
 
     // A SignUp Function
-    Future<void> signUpAndSaveDriverInfoNow() async {
+    Future<void> signUpAndSaveUserInfoNow() async {
 
       // Calling the progress indicator
       showProgressDialog(message: "Processing, Please wait...", context: context);
@@ -60,7 +61,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ).user;
 
       if(firebaseUser != null) {
-        Map driverMap =
+        Map userMap =
         {
           "id": firebaseUser.uid,
           "name": nameController.text.trim(),
@@ -68,11 +69,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
           "phone": phoneController.text.trim(),
         };
 
-        DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("drivers");
-        driversRef.child(firebaseUser.uid).set(driverMap);
+        DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("users");
+        driversRef.child(firebaseUser.uid).set(userMap);
 
         currentFirebaseUser = firebaseUser;
         Fluttertoast.showToast(msg: "Account has been Created.");
+        Navigator.push(context, MaterialPageRoute(builder: (c)=> const MySplashScreen()));
       }
       else
       {

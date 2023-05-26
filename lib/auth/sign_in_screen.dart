@@ -28,11 +28,11 @@ class _SignInScreenState extends State<SignInScreen> {
     }else if(passwordController.text.isEmpty) {
       Fluttertoast.showToast(msg: "Password is required.");
     }else {
-      loginDriverNow();
+      loginUserNow();
     }
   }
 
-  Future<void> loginDriverNow() async {
+  Future<void> loginUserNow() async {
     showProgressDialog(context: context, message: "Processing, Please wait...");
     final User? firebaseUser = (
         await fAuth.signInWithEmailAndPassword(
@@ -77,7 +77,7 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
               const SizedBox(height: 10),
               const Text(
-                "Login as a Driver",
+                "Login as a User",
                 style: TextStyle(
                   fontSize: 26,
                   color: Colors.grey,
