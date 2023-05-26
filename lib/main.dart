@@ -1,8 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:soft_ride/firebase_options.dart';
+import 'package:soft_ride/intro/splash_screen.dart';
 
-
-import 'firebase_options.dart';
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,7 +15,7 @@ Future<void> main() async{
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MySplashScreen(),
+      home: MySplashScreen(),
     )),
   );
 

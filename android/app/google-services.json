@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "1005188439450",
+    "firebase_url": "https://soft-ride-driver-default-rtdb.firebaseio.com",
+    "project_id": "soft-ride-driver",
+    "storage_bucket": "soft-ride-driver.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1005188439450:android:8c6bb5d5000efd90d6ae23",
+        "android_client_info": {
+          "package_name": "com.example.soft_ride"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1005188439450-ptv6ji5pgkhq1o36vmccrgvjt5ku5bnk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3QM8gpicZrFdfatO-12HboBobL-b-ur4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1005188439450-ptv6ji5pgkhq1o36vmccrgvjt5ku5bnk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1005188439450-fe93akvrbvboenkl6ld3k00hj17nnqea.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.softRideDriver"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1005188439450:android:3fe13f14ee09fed0d6ae23",
+        "android_client_info": {
+          "package_name": "com.example.soft_ride_driver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1005188439450-ptv6ji5pgkhq1o36vmccrgvjt5ku5bnk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3QM8gpicZrFdfatO-12HboBobL-b-ur4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1005188439450-ptv6ji5pgkhq1o36vmccrgvjt5ku5bnk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1005188439450-fe93akvrbvboenkl6ld3k00hj17nnqea.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.softRideDriver"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
