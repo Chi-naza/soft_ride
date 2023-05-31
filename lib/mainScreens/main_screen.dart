@@ -1,9 +1,9 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:soft_ride/Firebase_Service/global.dart';
-import 'package:soft_ride/auth/sign_in_screen.dart';
+import 'package:soft_ride/widgets/custom_drawer.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -26,10 +26,58 @@ class _MainScreenState extends State<MainScreen> {
   );
 
 
+  // Scaffold key
+  GlobalKey<ScaffoldState> sKey = GlobalKey<ScaffoldState>();
+
+  // For animated container
+  double searchLocationContainerHeight = 220;
+
+  // For Geo Location
+  Position? userCurrentPosition;
+  
+  var geoLocator = Geolocator();
+  LocationPermission? _locationPermission;
+  double bottomPaddingOfMap = 0;
+
+
+  // A function which tracks user's location per time
+  Future<void> locateUserPosition() async {
+    Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    userCurrentPosition = cPosition;
+
+    LatLng latLngPosition = LatLng(userCurrentPosition!.latitude, userCurrentPosition!.longitude);
+
+    CameraPosition cameraPosition = CameraPosition(target: latLngPosition, zoom: 14);
+
+    newGoogleMapController!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+  }
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    // TODO
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // drawer: MyDrawerWidget(name: userModelCurrentInfo!.name, email: userModelCurrentInfo!.email),
+      key: sKey,
+      drawer: Container(
+        width: 265,
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            canvasColor: Colors.black,
+          ),
+          child: MyDrawerWidget(
+            name: userModelCurrentInfo!.name,
+            email: userModelCurrentInfo!.email,
+          ),
+        ),
+      ),
       body: Stack(
         children: [
           GoogleMap(
@@ -43,6 +91,105 @@ class _MainScreenState extends State<MainScreen> {
               //for black theme google map
               blackThemeGoogleMap();
             },
+          ),
+          //custom hamburger button for drawer
+          Positioned(
+            top: 30,
+            left: 14,
+            child: GestureDetector(
+              onTap: () {
+                sKey.currentState!.openDrawer();
+              },
+              child: const CircleAvatar(
+                backgroundColor: Colors.grey,
+                child: Icon(
+                  Icons.menu,
+                  color: Colors.black54,
+                ),
+              ),
+            ),
+          ),
+          // FROM (location) ----- To (location) of users
+          // Searching Location By Users
+           Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: AnimatedSize(
+              curve: Curves.easeIn,
+              duration: const Duration(milliseconds: 120),
+              child: Container(
+                height: searchLocationContainerHeight,
+                decoration: const BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(20),
+                    topLeft: Radius.circular(20),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                  child: Column(
+                    children: [
+                      //from
+                      Row(
+                        children: [
+                          const Icon(Icons.add_location_alt_outlined, color: Colors.grey,),
+                          const SizedBox(width: 12.0,),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "From",
+                                style: TextStyle(color: Colors.grey, fontSize: 12),
+                              ),
+                              Text(
+                                "your current location",
+                                style: const TextStyle(color: Colors.grey, fontSize: 14),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10.0),
+                      const Divider(height: 1, thickness: 1, color: Colors.grey),
+                      const SizedBox(height: 16.0),
+                      // TO
+                      Row(
+                        children: [
+                          const Icon(Icons.add_location_alt_outlined, color: Colors.grey),
+                          const SizedBox(width: 12.0,),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Text(
+                                "To",
+                                style: TextStyle(color: Colors.grey, fontSize: 12),
+                              ),
+                              Text(
+                                "Where to go?",
+                                style: TextStyle(color: Colors.grey, fontSize: 14),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10.0),
+                      const Divider(height: 1, thickness: 1, color: Colors.grey),
+                      const SizedBox(height: 16.0),
+                      ElevatedButton(
+                        child: const Text("Request a Ride"),
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),

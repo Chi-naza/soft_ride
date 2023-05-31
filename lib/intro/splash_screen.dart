@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:soft_ride/Firebase_Service/global.dart';
 import 'package:soft_ride/auth/sign_in_screen.dart';
+import 'package:soft_ride/constants/helper_methods.dart';
 import 'package:soft_ride/constants/image_bank.dart';
 import 'package:soft_ride/mainScreens/main_screen.dart';
 
@@ -17,7 +18,11 @@ class MySplashScreen extends StatefulWidget {
 class _MySplashScreenState extends State<MySplashScreen> {
 
   // splash screen implementation
-  void startTimer(){
+  Future<void> startTimer() async {
+    // Fetching user's data from the database
+    if(fAuth.currentUser != null)  await HelperMethods.readCurrentOnlineUserInfo();
+    
+    
     Timer(const Duration(seconds: 5), () async{ 
       if(await fAuth.currentUser != null) {
         currentFirebaseUser = fAuth.currentUser;
