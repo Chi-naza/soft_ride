@@ -1,8 +1,11 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
 import 'package:soft_ride/Firebase_Service/global.dart';
+import 'package:soft_ride/Info_Handler/app_info.dart';
 import 'package:soft_ride/constants/map_keys.dart';
 import 'package:soft_ride/constants/request_methods.dart';
+import 'package:soft_ride/models/directions_model.dart';
 import 'package:soft_ride/models/user_model.dart';
 
 class HelperMethods {
@@ -37,12 +40,12 @@ class HelperMethods {
     if(requestResponse != "Error Occurred, Failed. No Response.") {
       humanReadableAddress = requestResponse["results"][0]["formatted_address"];
 
-      // Directions userPickUpAddress = Directions();
-      // userPickUpAddress.locationLatitude = position.latitude;
-      // userPickUpAddress.locationLongitude = position.longitude;
-      // userPickUpAddress.locationName = humanReadableAddress;
+      DirectionsModel userPickUpAddress = DirectionsModel();
+      userPickUpAddress.locationLatitude = position.latitude;
+      userPickUpAddress.locationLongitude = position.longitude;
+      userPickUpAddress.locationName = humanReadableAddress;
 
-      // Provider.of<AppInfo>(context, listen: false).updatePickUpLocationAddress(userPickUpAddress);
+      Provider.of<AppInfo>(context, listen: false).updatePickUpLocationAddress(userPickUpAddress);
     }
 
     return humanReadableAddress;

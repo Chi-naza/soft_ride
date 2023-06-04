@@ -3,7 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:soft_ride/Firebase_Service/global.dart';
+import 'package:soft_ride/Info_Handler/app_info.dart';
 import 'package:soft_ride/constants/helper_methods.dart';
 import 'package:soft_ride/widgets/custom_drawer.dart';
 
@@ -165,13 +167,16 @@ class _MainScreenState extends State<MainScreen> {
                           const SizedBox(width: 12.0,),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
+                            children: [
+                              const Text(
                                 "From",
                                 style: TextStyle(color: Colors.grey, fontSize: 12),
                               ),
                               Text(
-                                "your current location",
+                                Provider.of<AppInfo>(context).userPickUpLocation != null? 
+                                  "${(Provider.of<AppInfo>(context).userPickUpLocation!.locationName!).substring(0,35)}..."
+                                  : 
+                                  "Not getting address",
                                 style: TextStyle(color: Colors.grey, fontSize: 14),
                               ),
                             ],

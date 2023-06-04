@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:soft_ride/Info_Handler/app_info.dart';
 import 'package:soft_ride/firebase_options.dart';
 import 'package:soft_ride/intro/splash_screen.dart';
 
@@ -10,12 +12,15 @@ Future<void> main() async{
   await Firebase.initializeApp( options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(MyApp(
-    child: MaterialApp(
-      title: 'Soft Drive',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    child: ChangeNotifierProvider(
+      create: (context) => AppInfo(),
+      child: MaterialApp(
+        title: 'Soft Drive',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: MySplashScreen(),
       ),
-      home: MySplashScreen(),
     )),
   );
 
