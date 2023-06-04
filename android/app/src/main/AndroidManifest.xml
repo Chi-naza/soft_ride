@@ -1,5 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.soft_ride">
+
+    <!-- For Geolocator and Getting user consent for location -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
    <application
         android:label="soft_ride"
         android:name="${applicationName}"
@@ -33,6 +38,6 @@
         
         <!-- For Google Maps API -->
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyD3QM8gpicZrFdfatO-12HboBobL-b-ur4"/>
+            android:value="AIzaSyDXTntigoSJzH0Md9hCrd6Slo9OQyiokGA"/>
     </application>
 </manifest>

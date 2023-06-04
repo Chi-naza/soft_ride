@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:soft_ride/Firebase_Service/global.dart';
+import 'package:soft_ride/constants/helper_methods.dart';
 import 'package:soft_ride/widgets/custom_drawer.dart';
 
 class MainScreen extends StatefulWidget {
@@ -50,6 +52,21 @@ class _MainScreenState extends State<MainScreen> {
     CameraPosition cameraPosition = CameraPosition(target: latLngPosition, zoom: 14);
 
     newGoogleMapController!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    if(kDebugMode)print('CURRENT POSITION GOTTEN: LAT - ${userCurrentPosition!.latitude}, LONG - ${userCurrentPosition!.longitude}');
+
+    // ignore: use_build_context_synchronously
+    String humanReadableAddress = await HelperMethods.searchAddressForGeographicCoOrdinates(userCurrentPosition!, context);
+    if(kDebugMode)print("USER'S ACTUAL ADDRESS = $humanReadableAddress");
+  }
+
+
+  // Check if User has given Location permission
+  Future<void> checkIfLocationPermissionAllowed() async {
+    _locationPermission = await Geolocator.requestPermission();
+
+    if(_locationPermission == LocationPermission.denied) {
+      _locationPermission = await Geolocator.requestPermission();
+    }
   }
 
 
@@ -57,14 +74,13 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    // TODO
+    checkIfLocationPermissionAllowed();
   }
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // drawer: MyDrawerWidget(name: userModelCurrentInfo!.name, email: userModelCurrentInfo!.email),
       key: sKey,
       drawer: Container(
         width: 265,
@@ -81,8 +97,11 @@ class _MainScreenState extends State<MainScreen> {
       body: Stack(
         children: [
           GoogleMap(
+            padding: EdgeInsets.only(bottom: bottomPaddingOfMap),
             mapType: MapType.normal,
             myLocationEnabled: true,
+            zoomControlsEnabled: true,
+            zoomGesturesEnabled: true,
             initialCameraPosition: _kGooglePlex,
             onMapCreated: (GoogleMapController controller) {
               _controllerGoogleMap.complete(controller);
@@ -90,6 +109,14 @@ class _MainScreenState extends State<MainScreen> {
 
               //for black theme google map
               blackThemeGoogleMap();
+
+              // Move the Google Map Area Upwards using bottom padding
+              setState(() {
+                bottomPaddingOfMap = 240;
+              });
+
+              // locating user's exact position in real time
+              locateUserPosition();
             },
           ),
           //custom hamburger button for drawer
@@ -121,7 +148,7 @@ class _MainScreenState extends State<MainScreen> {
               child: Container(
                 height: searchLocationContainerHeight,
                 decoration: const BoxDecoration(
-                  color: Colors.black,
+                  color: Colors.black54,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(20),
                     topLeft: Radius.circular(20),
@@ -138,14 +165,14 @@ class _MainScreenState extends State<MainScreen> {
                           const SizedBox(width: 12.0,),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
+                            children: const [
+                              Text(
                                 "From",
                                 style: TextStyle(color: Colors.grey, fontSize: 12),
                               ),
                               Text(
                                 "your current location",
-                                style: const TextStyle(color: Colors.grey, fontSize: 14),
+                                style: TextStyle(color: Colors.grey, fontSize: 14),
                               ),
                             ],
                           ),
@@ -178,7 +205,7 @@ class _MainScreenState extends State<MainScreen> {
                       const Divider(height: 1, thickness: 1, color: Colors.grey),
                       const SizedBox(height: 16.0),
                       ElevatedButton(
-                        child: const Text("Request a Ride"),
+                        child: Text("Request a Ride"),
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
