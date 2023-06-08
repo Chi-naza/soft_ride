@@ -3,8 +3,8 @@ import 'package:soft_ride/Firebase_Service/global.dart';
 import 'package:soft_ride/intro/splash_screen.dart';
 
 class MyDrawerWidget extends StatefulWidget {
-  String? name;
-  String? email;
+  final String? name;
+  final String? email;
 
   MyDrawerWidget({super.key, this.name, this.email});
 

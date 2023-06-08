@@ -1,10 +1,12 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:soft_ride/Firebase_Service/global.dart';
 import 'package:soft_ride/Info_Handler/app_info.dart';
 import 'package:soft_ride/constants/map_keys.dart';
 import 'package:soft_ride/constants/request_methods.dart';
+import 'package:soft_ride/models/directions_details_info_model.dart';
 import 'package:soft_ride/models/directions_model.dart';
 import 'package:soft_ride/models/user_model.dart';
 
@@ -50,5 +52,34 @@ class HelperMethods {
 
     return humanReadableAddress;
   }
+
+
+
+
+  static Future<DirectionDetailsInfoModel?> obtainOriginToDestinationDirectionDetails(LatLng originPosition, LatLng destinationPosition) async {
+
+    // Directions API endpoint
+    String urlOriginToDestinationDirectionDetails = "https://maps.googleapis.com/maps/api/directions/json?origin=${originPosition.latitude},${originPosition.longitude}&destination=${destinationPosition.latitude},${destinationPosition.longitude}&key=$googleMapAPIkey";
+
+    var responseDirectionApi = await RequestMethods.receiveRequest(urlOriginToDestinationDirectionDetails); 
+
+    if(responseDirectionApi == "Error Occurred, Failed. No Response.") return null;
+    
+    // Initializing our model
+    DirectionDetailsInfoModel directionDetailsInfo = DirectionDetailsInfoModel();
+    directionDetailsInfo.ePoints = responseDirectionApi["routes"][0]["overview_polyline"]["points"];
+
+    directionDetailsInfo.distanceText = responseDirectionApi["routes"][0]["legs"][0]["distance"]["text"];
+    directionDetailsInfo.distanceValue = responseDirectionApi["routes"][0]["legs"][0]["distance"]["value"];
+
+    directionDetailsInfo.durationText = responseDirectionApi["routes"][0]["legs"][0]["duration"]["text"];
+    directionDetailsInfo.durationValue = responseDirectionApi["routes"][0]["legs"][0]["duration"]["value"];
+
+    return directionDetailsInfo;
+  }
+
+
+
+
 
 }

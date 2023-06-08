@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:soft_ride/Firebase_Service/global.dart';
 import 'package:soft_ride/Info_Handler/app_info.dart';
 import 'package:soft_ride/constants/helper_methods.dart';
+import 'package:soft_ride/mainScreens/search_places_screen.dart';
 import 'package:soft_ride/widgets/custom_drawer.dart';
 
 class MainScreen extends StatefulWidget {
@@ -176,7 +177,7 @@ class _MainScreenState extends State<MainScreen> {
                                 Provider.of<AppInfo>(context).userPickUpLocation != null? 
                                   "${(Provider.of<AppInfo>(context).userPickUpLocation!.locationName!).substring(0,35)}..."
                                   : 
-                                  "Not getting address",
+                                  "Unable to fecth your address",
                                 style: TextStyle(color: Colors.grey, fontSize: 14),
                               ),
                             ],
@@ -187,24 +188,39 @@ class _MainScreenState extends State<MainScreen> {
                       const Divider(height: 1, thickness: 1, color: Colors.grey),
                       const SizedBox(height: 16.0),
                       // TO
-                      Row(
-                        children: [
-                          const Icon(Icons.add_location_alt_outlined, color: Colors.grey),
-                          const SizedBox(width: 12.0,),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
-                                "To",
-                                style: TextStyle(color: Colors.grey, fontSize: 12),
-                              ),
-                              Text(
-                                "Where to go?",
-                                style: TextStyle(color: Colors.grey, fontSize: 14),
-                              ),
-                            ],
-                          ),
-                        ],
+                      GestureDetector(
+                        onTap: () {
+                          // Go to search for places screen
+                          var responseFromSearchScreen = Navigator.of(context).push(MaterialPageRoute(builder: (c) => const SearchPlacesScreen()));
+
+                          if(responseFromSearchScreen == "obtainedDropoff"){
+                            // Draw Polyline
+                            print('I am drawing lines now');
+                          }
+
+                        }, 
+                        child: Row(
+                          children: [
+                            const Icon(Icons.add_location_alt_outlined, color: Colors.grey),
+                            const SizedBox(width: 12.0,),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "To",
+                                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                                ),
+                                Text(
+                                  Provider.of<AppInfo>(context).userDropOffLocation != null?
+                                  Provider.of<AppInfo>(context).userDropOffLocation!.locationName!
+                                  :
+                                  "Where do you intend to go?",
+                                  style: TextStyle(color: Colors.grey, fontSize: 14),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 10.0),
                       const Divider(height: 1, thickness: 1, color: Colors.grey),
