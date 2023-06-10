@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,7 @@ import 'package:soft_ride/Info_Handler/app_info.dart';
 import 'package:soft_ride/constants/helper_methods.dart';
 import 'package:soft_ride/mainScreens/search_places_screen.dart';
 import 'package:soft_ride/widgets/custom_drawer.dart';
+import 'package:soft_ride/widgets/progress_dialog.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -45,6 +47,15 @@ class _MainScreenState extends State<MainScreen> {
   double bottomPaddingOfMap = 0;
 
 
+  // For PolyLines
+  List<LatLng> pLineCoOrdinatesList = [];
+  Set<Polyline> polyLineSet = {};
+
+  // For Markers
+  Set<Marker> markersSet = {};
+  Set<Circle> circlesSet = {};
+
+
   // A function which tracks user's location per time
   Future<void> locateUserPosition() async {
     Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
@@ -70,6 +81,123 @@ class _MainScreenState extends State<MainScreen> {
     if(_locationPermission == LocationPermission.denied) {
       _locationPermission = await Geolocator.requestPermission();
     }
+  }
+
+
+
+
+  // A function which will draw the poly-lines from source - destination.
+  Future<void> drawPolyLineFromOriginToDestination() async {
+    var originPosition = Provider.of<AppInfo>(context, listen: false).userPickUpLocation;
+    var destinationPosition = Provider.of<AppInfo>(context, listen: false).userDropOffLocation;
+
+    var originLatLng = LatLng(originPosition!.locationLatitude!, originPosition.locationLongitude!);
+    var destinationLatLng = LatLng(destinationPosition!.locationLatitude!, destinationPosition.locationLongitude!);
+
+    // Progress dialog widget
+    showProgressDialog(message: "Please wait...", context: context);
+
+    var directionDetailsInfo = await HelperMethods.obtainOriginToDestinationDirectionDetails(originLatLng, destinationLatLng);
+    // Popping off progress indicator
+    Navigator.pop(context);
+
+    PolylinePoints pPoints = PolylinePoints();
+    // Decoding the polyLine by passing the fetched points from the user's description to Flutter-Polyline_Points
+    List<PointLatLng> decodedPolyLinePointsResultList = pPoints.decodePolyline(directionDetailsInfo!.ePoints!);
+
+    // Emptying the coordinates list before we set a new series of point coordinates to it. Coming from the decoded pLine points
+    pLineCoOrdinatesList.clear();
+
+    // Looping through each of the polyline points in the decodedPolylinePoints and adding them to pLineCoOrdinateList
+    if(decodedPolyLinePointsResultList.isNotEmpty) {
+      for (var pointLatLng in decodedPolyLinePointsResultList) {
+        pLineCoOrdinatesList.add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
+      }
+    }
+
+    // clear the polyline SET before adding a new value to it
+    polyLineSet.clear(); 
+
+    setState(() {
+      Polyline polyline = Polyline(
+        color: Colors.purpleAccent,
+        polylineId: const PolylineId("PolylineID"),
+        jointType: JointType.round,
+        points: pLineCoOrdinatesList,
+        startCap: Cap.roundCap, 
+        endCap: Cap.roundCap,
+        geodesic: true,
+      );
+
+      polyLineSet.add(polyline);
+    });
+
+    // Creating an instance of latlng bounds which will be used to animate the camera when initialized.
+    LatLngBounds boundsLatLng;
+
+    if(originLatLng.latitude > destinationLatLng.latitude && originLatLng.longitude > destinationLatLng.longitude) {
+      boundsLatLng = LatLngBounds(southwest: destinationLatLng, northeast: originLatLng);
+    }
+    else if(originLatLng.longitude > destinationLatLng.longitude) {
+      boundsLatLng = LatLngBounds(
+          southwest: LatLng(originLatLng.latitude, destinationLatLng.longitude),
+          northeast: LatLng(destinationLatLng.latitude, originLatLng.longitude),
+      );
+    }
+    else if(originLatLng.latitude > destinationLatLng.latitude) {
+      boundsLatLng = LatLngBounds(
+        southwest: LatLng(destinationLatLng.latitude, originLatLng.longitude),
+        northeast: LatLng(originLatLng.latitude, destinationLatLng.longitude),
+      );
+    }
+    else {
+      boundsLatLng = LatLngBounds(southwest: originLatLng, northeast: destinationLatLng);
+    }
+    
+    // Here we animate the googleMap camera according to the latlng bounds
+    newGoogleMapController!.animateCamera(CameraUpdate.newLatLngBounds(boundsLatLng, 65));
+
+    // Marker originMarker = Marker(
+    //   markerId: const MarkerId("originID"),
+    //   infoWindow: InfoWindow(title: originPosition.locationName, snippet: "Origin"),
+    //   position: originLatLng,
+    //   icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
+    // );
+
+    // Marker destinationMarker = Marker(
+    //   markerId: const MarkerId("destinationID"),
+    //   infoWindow: InfoWindow(title: destinationPosition.locationName, snippet: "Destination"),
+    //   position: destinationLatLng,
+    //   icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+    // );
+
+    // setState(() {
+    //   markersSet.add(originMarker);
+    //   markersSet.add(destinationMarker);
+    // });
+
+    // Circle originCircle = Circle(
+    //   circleId: const CircleId("originID"),
+    //   fillColor: Colors.green,
+    //   radius: 12,
+    //   strokeWidth: 3,
+    //   strokeColor: Colors.white,
+    //   center: originLatLng,
+    // );
+
+    // Circle destinationCircle = Circle(
+    //   circleId: const CircleId("destinationID"),
+    //   fillColor: Colors.red,
+    //   radius: 12,
+    //   strokeWidth: 3,
+    //   strokeColor: Colors.white,
+    //   center: destinationLatLng,
+    // );
+
+    // setState(() {
+    //   circlesSet.add(originCircle);
+    //   circlesSet.add(destinationCircle);
+    // });
   }
 
 
@@ -105,19 +233,19 @@ class _MainScreenState extends State<MainScreen> {
             myLocationEnabled: true,
             zoomControlsEnabled: true,
             zoomGesturesEnabled: true,
+            polylines: polyLineSet,
+            markers: markersSet,
+            circles: circlesSet,
             initialCameraPosition: _kGooglePlex,
             onMapCreated: (GoogleMapController controller) {
               _controllerGoogleMap.complete(controller);
               newGoogleMapController = controller;
-
               //for black theme google map
               blackThemeGoogleMap();
-
               // Move the Google Map Area Upwards using bottom padding
               setState(() {
                 bottomPaddingOfMap = 240;
               });
-
               // locating user's exact position in real time
               locateUserPosition();
             },
@@ -189,13 +317,14 @@ class _MainScreenState extends State<MainScreen> {
                       const SizedBox(height: 16.0),
                       // TO
                       GestureDetector(
-                        onTap: () {
+                        onTap: () async {
                           // Go to search for places screen
-                          var responseFromSearchScreen = Navigator.of(context).push(MaterialPageRoute(builder: (c) => const SearchPlacesScreen()));
+                          var responseFromSearchScreen = await Navigator.of(context).push(MaterialPageRoute(builder: (c) => const SearchPlacesScreen()));
 
                           if(responseFromSearchScreen == "obtainedDropoff"){
                             // Draw Polyline
                             print('I am drawing lines now');
+                            await drawPolyLineFromOriginToDestination();
                           }
 
                         }, 

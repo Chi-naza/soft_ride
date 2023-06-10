@@ -18,16 +18,16 @@ class PlacePredictionTileDesign extends StatelessWidget {
   // Getting the details of the place picked by the user in the 'pick-destination-screen'
   Future<void> getPlaceDirectionDetails({required String placeID, required BuildContext context }) async {
     // show a dialog message
-    const ProgressDialogWidget(message: "Setting Up Drof-Off, Please wait...");
+    showProgressDialog(message: "Setting Up Drof-Off, Please wait...", context: context);
 
     String placeDirectionDetailsUrl = "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeID&key=$googleMapAPIkey";
 
     var responseApi = await RequestMethods.receiveRequest(placeDirectionDetailsUrl);
 
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 3));
 
     // Removing the dialog message
-    // Navigator.pop(context);
+    Navigator.pop(context);
 
     if(responseApi == "Error Occurred, Failed. No Response.") {
       return;

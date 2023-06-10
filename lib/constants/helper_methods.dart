@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -57,9 +58,16 @@ class HelperMethods {
 
 
   static Future<DirectionDetailsInfoModel?> obtainOriginToDestinationDirectionDetails(LatLng originPosition, LatLng destinationPosition) async {
+    if(kDebugMode){
+      print("S-LAT: ${originPosition.latitude}");
+      print("S-LONG: ${originPosition.longitude}");
+      print("D-LAT: ${destinationPosition.latitude}");
+      print("D-LONG: ${destinationPosition.longitude}");
+    }
 
     // Directions API endpoint
     String urlOriginToDestinationDirectionDetails = "https://maps.googleapis.com/maps/api/directions/json?origin=${originPosition.latitude},${originPosition.longitude}&destination=${destinationPosition.latitude},${destinationPosition.longitude}&key=$googleMapAPIkey";
+    // String urlOriginToDestinationDirectionDetails = "https://maps.googleapis.com/maps/api/directions/json?origin=34.1330949,-117.9143879&destination=33.8068768,-118.3527671&key=$googleMapAPIkey";
 
     var responseDirectionApi = await RequestMethods.receiveRequest(urlOriginToDestinationDirectionDetails); 
 
