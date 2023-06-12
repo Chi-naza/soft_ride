@@ -157,47 +157,51 @@ class _MainScreenState extends State<MainScreen> {
     // Here we animate the googleMap camera according to the latlng bounds
     newGoogleMapController!.animateCamera(CameraUpdate.newLatLngBounds(boundsLatLng, 65));
 
-    // Marker originMarker = Marker(
-    //   markerId: const MarkerId("originID"),
-    //   infoWindow: InfoWindow(title: originPosition.locationName, snippet: "Origin"),
-    //   position: originLatLng,
-    //   icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
-    // );
+    // Origin marker
+    Marker originMarker = Marker(
+      markerId: const MarkerId("originID"),
+      infoWindow: InfoWindow(title: originPosition.locationName, snippet: "Origin"),
+      position: originLatLng,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
+    );
 
-    // Marker destinationMarker = Marker(
-    //   markerId: const MarkerId("destinationID"),
-    //   infoWindow: InfoWindow(title: destinationPosition.locationName, snippet: "Destination"),
-    //   position: destinationLatLng,
-    //   icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
-    // );
+    // Destination marker
+    Marker destinationMarker = Marker(
+      markerId: const MarkerId("destinationID"),
+      infoWindow: InfoWindow(title: destinationPosition.locationName, snippet: "Destination"),
+      position: destinationLatLng,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+    );
 
-    // setState(() {
-    //   markersSet.add(originMarker);
-    //   markersSet.add(destinationMarker);
-    // });
+    setState(() {
+      markersSet.add(originMarker);
+      markersSet.add(destinationMarker);
+    });
 
-    // Circle originCircle = Circle(
-    //   circleId: const CircleId("originID"),
-    //   fillColor: Colors.green,
-    //   radius: 12,
-    //   strokeWidth: 3,
-    //   strokeColor: Colors.white,
-    //   center: originLatLng,
-    // );
+    // Origin circle
+    Circle originCircle = Circle(
+      circleId: const CircleId("originID"),
+      fillColor: Colors.green,
+      radius: 12,
+      strokeWidth: 3,
+      strokeColor: Colors.white,
+      center: originLatLng,
+    );
 
-    // Circle destinationCircle = Circle(
-    //   circleId: const CircleId("destinationID"),
-    //   fillColor: Colors.red,
-    //   radius: 12,
-    //   strokeWidth: 3,
-    //   strokeColor: Colors.white,
-    //   center: destinationLatLng,
-    // );
+    // Destination circle
+    Circle destinationCircle = Circle(
+      circleId: const CircleId("destinationID"),
+      fillColor: Colors.red,
+      radius: 12,
+      strokeWidth: 3,
+      strokeColor: Colors.white,
+      center: destinationLatLng,
+    );
 
-    // setState(() {
-    //   circlesSet.add(originCircle);
-    //   circlesSet.add(destinationCircle);
-    // });
+    setState(() {
+      circlesSet.add(originCircle);
+      circlesSet.add(destinationCircle);
+    });
   }
 
 

@@ -24,8 +24,6 @@ class PlacePredictionTileDesign extends StatelessWidget {
 
     var responseApi = await RequestMethods.receiveRequest(placeDirectionDetailsUrl);
 
-    await Future.delayed(const Duration(seconds: 3));
-
     // Removing the dialog message
     Navigator.pop(context);
 
