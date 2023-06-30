@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -20,6 +21,10 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+
+  // Fixing Null Variables With Initial Values
+  String userName = "Your Name";
+  String userEmail = "Your Email";
 
   // Setting up Google Map
   final Completer<GoogleMapController> _controllerGoogleMap = Completer();
@@ -56,6 +61,10 @@ class _MainScreenState extends State<MainScreen> {
   Set<Circle> circlesSet = {};
 
 
+  // bool for navbar toggle
+   bool openNavigationDrawer = true;
+
+
   // A function which tracks user's location per time
   Future<void> locateUserPosition() async {
     Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
@@ -71,6 +80,10 @@ class _MainScreenState extends State<MainScreen> {
     // ignore: use_build_context_synchronously
     String humanReadableAddress = await HelperMethods.searchAddressForGeographicCoOrdinates(userCurrentPosition!, context);
     if(kDebugMode)print("USER'S ACTUAL ADDRESS = $humanReadableAddress");
+
+    // Giving the variables the fetched data, after successful fetch
+    userName = userModelCurrentInfo!.name!;
+    userEmail = userModelCurrentInfo!.email!;
   }
 
 
@@ -109,7 +122,7 @@ class _MainScreenState extends State<MainScreen> {
     pLineCoOrdinatesList.clear();
 
     // Looping through each of the polyline points in the decodedPolylinePoints and adding them to pLineCoOrdinateList
-    if(decodedPolyLinePointsResultList.isNotEmpty) {
+    if(decodedPolyLinePointsResultList.isNotEmpty) {      
       for (var pointLatLng in decodedPolyLinePointsResultList) {
         pLineCoOrdinatesList.add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
       }
@@ -224,8 +237,8 @@ class _MainScreenState extends State<MainScreen> {
             canvasColor: Colors.black,
           ),
           child: MyDrawerWidget(
-            name: userModelCurrentInfo!.name,
-            email: userModelCurrentInfo!.email,
+            name: userName,
+            email: userEmail,
           ),
         ),
       ),
@@ -260,12 +273,17 @@ class _MainScreenState extends State<MainScreen> {
             left: 14,
             child: GestureDetector(
               onTap: () {
-                sKey.currentState!.openDrawer();
+                if(openNavigationDrawer) {
+                  sKey.currentState!.openDrawer();
+                }else {
+                  //restart-refresh-minimize app progmatically
+                  SystemNavigator.pop();
+                }
               },
-              child: const CircleAvatar(
+              child: CircleAvatar(
                 backgroundColor: Colors.grey,
                 child: Icon(
-                  Icons.menu,
+                  openNavigationDrawer? Icons.menu : Icons.close,
                   color: Colors.black54,
                 ),
               ),
@@ -326,8 +344,12 @@ class _MainScreenState extends State<MainScreen> {
                           var responseFromSearchScreen = await Navigator.of(context).push(MaterialPageRoute(builder: (c) => const SearchPlacesScreen()));
 
                           if(responseFromSearchScreen == "obtainedDropoff"){
+                            // setting our bool false when polylines have been drawn. So that one can cancel location already picked:
+                            setState(() {
+                              openNavigationDrawer = false;
+                            });
                             // Draw Polyline
-                            print('I am drawing lines now');
+                            if (kDebugMode) print('I am drawing lines now');
                             await drawPolyLineFromOriginToDestination();
                           }
 
